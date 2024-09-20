@@ -1,5 +1,4 @@
 import SideNav from '@/app/ui/dashboard/sidenav';
-import { log } from 'console';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   console.log('This is layout and should not rerender');
