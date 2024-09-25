@@ -2,6 +2,7 @@ import globals from 'globals';
 import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import pluginReact from 'eslint-plugin-react';
+import importPlugin from 'eslint-plugin-import';
 
 export default [
   {
@@ -22,6 +23,11 @@ export default [
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   {
+    plugins: {
+      import: importPlugin,
+    },
+  },
+  {
     settings: {
       react: {
         version: 'detect',
@@ -38,7 +44,22 @@ export default [
       '@typescript-eslint/no-unused-vars': 'off',
       'react/no-unescaped-entities': 'off',
       // Ensure an empty line before return statements
-      'padding-line-between-statements': ['error', { blankLine: 'always', prev: '*', next: 'return' }],
+      'padding-line-between-statements': [
+        'error',
+        { blankLine: 'always', prev: '*', next: 'return' },
+        { blankLine: 'always', prev: 'import', next: '*' },
+        { blankLine: 'any', prev: 'import', next: 'import' },
+      ],
+
+      // Order imports
+      'import/order': [
+        'error',
+        {
+          groups: [['builtin', 'external'], 'internal', ['parent', 'sibling', 'index']],
+          'newlines-between': 'always',
+        },
+      ],
+
       // Ensure spaces around if statements
       'keyword-spacing': ['error', { before: true, after: true }],
     },
