@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { ChangeEvent, useState } from 'react';
 
-export default function ImageUpload({ url, alt }: { url: string, alt: string }) {
+export default function ImageUpload({ url = '', alt }: { url?: string, alt: string }) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
