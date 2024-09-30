@@ -146,8 +146,6 @@ export async function updateCustomer(customerId: string, formData: FormData) {
     WHERE id = ${customerId}
   `;
 
-    // revalidatePath('/dashboard/customers');
-    // redirect('/dashboard/customers');
   } catch (err) {
     console.log('Customer update failed. Error:', err);
     throw new Error('Failed to update customer.');
