@@ -62,6 +62,9 @@ export default [
 
       // Ensure spaces around if statements
       'keyword-spacing': ['error', { before: true, after: true }],
+      "no-unused-expressions": ["error", { "allowShortCircuit": true, "allowTernary": true
+      }]
+
     },
   },
 ];

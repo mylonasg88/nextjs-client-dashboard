@@ -1,6 +1,8 @@
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
+import { Dialog } from './dialog';
+
 import { deleteCustomer } from '@/app/lib/actions';
 
 export function CreateCustomer() {
@@ -26,11 +28,14 @@ export function DeleteCustomer({ customerId }: { customerId: string }) {
   const deleteCustomerWithId = deleteCustomer.bind(null, customerId);
 
   return (
-    <form action={deleteCustomerWithId}>
-      <button className="border p-2 rounded-md">
-        <span className="sr-only">Delete</span>
-        <TrashIcon className="w-5" />
-      </button>
-    </form>
+    <>
+      <form action={deleteCustomerWithId}>
+        <button className="border p-2 rounded-md">
+          <span className="sr-only">Delete</span>
+          <TrashIcon className="w-5" />
+        </button>
+        <Dialog />
+      </form>
+    </>
   );
 }

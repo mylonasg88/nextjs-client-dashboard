@@ -1,12 +1,14 @@
 import Image from 'next/image';
 
 import Pagination from '../global/pagination';
-import { DeleteCustomer, UpdateCustomer } from './buttons';
+import { UpdateCustomer } from './buttons';
+import { DeleteCustomer } from './ButtonsClient';
 
 import { fetchFilteredCustomers, fetchFilteredCustomersPages } from '@/app/lib/data';
 
 export default async function CustomersTable({ query, currentPage }: { query: string; currentPage: number }) {
   const customers = await fetchFilteredCustomers(query, currentPage);
+  console.log(customers);
 
   return (
     <div className="w-full">
@@ -25,7 +27,7 @@ export default async function CustomersTable({ query, currentPage }: { query: st
                               src={
                                 customer.image_url.length > 0 ? customer.image_url : '/customers/default/profile.png'
                               }
-                              className="rounded-full"
+                              className={`rounded-full ${customer.isdisabled && 'border-red-500 border-2' }`}
                               alt={`${customer.name}'s profile picture`}
                               width={28}
                               height={28}
@@ -83,7 +85,7 @@ export default async function CustomersTable({ query, currentPage }: { query: st
                         <div className="flex items-center gap-3">
                           <Image
                             src={customer.image_url.length > 0 ? customer.image_url : '/customers/default/profile.png'}
-                            className="rounded-full"
+                            className={`rounded-full ${customer.isdisabled && 'border-red-500 border-2' }`}
                             alt={`${customer.name}'s profile picture`}
                             width={28}
                             height={28}
@@ -100,7 +102,7 @@ export default async function CustomersTable({ query, currentPage }: { query: st
                       <td className="whitespace-nowrap bg-white py-5 text-sm">
                         <div className="flex justify-end gap-3">
                           <UpdateCustomer customerId={customer.id} />
-                          <DeleteCustomer customerId={customer.id} />
+                          <DeleteCustomer customerId={customer.id} isDisabled={customer.isdisabled} />
                         </div>
                       </td>
                     </tr>

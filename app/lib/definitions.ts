@@ -60,6 +60,7 @@ export type CustomersTableType = {
   name: string;
   email: string;
   image_url: string;
+  isdisabled: boolean;
   total_invoices: number;
   total_pending: number;
   total_paid: number;

@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { custom, z } from 'zod';
+import { z } from 'zod';
 
 const InvoiceSchema = z.object({
   id: z.string(),
@@ -114,7 +114,26 @@ export async function createCustomer(formData: FormData) {
 }
 
 export async function deleteCustomer(customerId: string) {
-  console.log('customerId : ', customerId);
+  console.log('deleteCustomer - customerId : ', customerId);
+
+  try {
+    await sql`UPDATE customers SET is_deleted = TRUE WHERE id = ${customerId}`;
+  } catch (err) {
+    console.log('Customer deletion failed. Error: ', err);
+    throw new Error('Failed to delete a customer');
+  }
+
+  revalidatePath('/dashboard/customers');
+  redirect('/dashboard/customers');
+}
+
+export async function disableCustomer(customerId: string) {
+  try {
+    await sql`UPDATE customers SET is_disabled = TRUE WHERE id = ${customerId}`;
+  } catch (err) {
+    console.log('Customer disable failed. Error: ', err);
+    throw new Error('Failed to disable a customer');
+  }
 
   revalidatePath('/dashboard/customers');
   redirect('/dashboard/customers');
@@ -145,7 +164,6 @@ export async function updateCustomer(customerId: string, formData: FormData) {
     SET email = ${email}, name = ${firstName + ' ' + lastName}, image_url = ${fileName}
     WHERE id = ${customerId}
   `;
-
   } catch (err) {
     console.log('Customer update failed. Error:', err);
     throw new Error('Failed to update customer.');
