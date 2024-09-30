@@ -19,7 +19,7 @@ export default async function InvoicesTable({ query, currentPage }: { query: str
                   <div>
                     <div className="mb-2 flex items-center">
                       <Image
-                        src={invoice.image_url}
+                        src={invoice.image_url.length > 0 ? invoice.image_url : '/customers/default/profile.png'}
                         className="mr-2 rounded-full"
                         width={28}
                         height={28}
@@ -76,7 +76,7 @@ export default async function InvoicesTable({ query, currentPage }: { query: str
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex items-center gap-3">
                       <Image
-                        src={invoice.image_url}
+                        src={invoice.image_url.length > 0 ? invoice.image_url : '/customers/default/profile.png'}
                         className="rounded-full"
                         width={28}
                         height={28}
