@@ -4,7 +4,7 @@ import { CheckIcon, ClockIcon, CurrencyDollarIcon, UserCircleIcon } from '@heroi
 import Link from 'next/link';
 
 import { CustomerField, InvoiceForm } from '@/app/lib/definitions';
-import { Button } from '@/app/ui/button';
+import { Button } from '@/app/ui/components/button';
 import { updateInvoice } from '@/app/lib/actions';
 
 export default function EditInvoiceForm({ invoice, customers }: { invoice: InvoiceForm; customers: CustomerField[] }) {

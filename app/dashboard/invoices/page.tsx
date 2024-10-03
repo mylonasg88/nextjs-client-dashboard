@@ -1,18 +1,15 @@
 import { Suspense } from 'react';
 
-import Pagination from '@/app/ui/invoices/pagination';
+import InvoicesTablePagination from '@/app/ui/invoices/table-pagination';
 import Search from '@/app/ui/search';
 import Table from '@/app/ui/invoices/table';
 import { CreateInvoice } from '@/app/ui/invoices/buttons';
 import { lusitana } from '@/app/ui/fonts';
-import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
-import { fetchInvoicesPages } from '@/app/lib/data';
+import { InvoicesTableSkeleton, PaginationSkeleton } from '@/app/ui/skeletons';
 
 export default async function Page({ searchParams, ...props }: { searchParams?: { query?: string; page?: string } }) {
   const query = searchParams?.query || '';
   const page = Number(searchParams?.page) || 1;
-
-  const totalPages = await fetchInvoicesPages(query);
 
   return (
     <div className="w-full">
@@ -27,7 +24,9 @@ export default async function Page({ searchParams, ...props }: { searchParams?: 
         <Table query={query} currentPage={page} />
       </Suspense>
       <div className="mt-5 flex w-full justify-center">
-        <Pagination totalPages={totalPages} />
+        <Suspense key={Math.random()} fallback={<PaginationSkeleton />}>
+          <InvoicesTablePagination query={query} />
+        </Suspense>
       </div>
     </div>
   );

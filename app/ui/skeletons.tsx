@@ -207,3 +207,15 @@ export function InvoicesTableSkeleton() {
     </div>
   );
 }
+
+export function PaginationSkeleton() {
+  return (
+    <div className="flex justify-end gap-3">
+      <div className="h-[38px] w-[38px] rounded bg-gray-100"></div>
+      <div className="h-[38px] w-[38px] rounded bg-gray-100"></div>
+      <div className="h-[38px] w-[38px] rounded bg-gray-100"></div>
+      <div className="h-[38px] w-[38px] rounded bg-gray-100"></div>
+      <div className="h-[38px] w-[38px] rounded bg-gray-100"></div>
+    </div>
+  );
+}
