@@ -257,7 +257,12 @@ export async function fetchFilteredCustomers(query: string, currentPage: number)
 
 export async function fetchCustomer(id: string) {
   try {
-    const data = await sql<CustomersTableType>`SELECT * FROM customers WHERE customers.id = ${id}`;
+    const data = await sql<CustomersTableType>`SELECT  id,
+        name,
+        email,
+        image_url, is_deleted as isdeleted, 
+        is_disabled as isdisabled 
+        FROM customers WHERE customers.id = ${id}`;
 
     if (data.rows.length === 0) {
       throw new Error('Customer not found');

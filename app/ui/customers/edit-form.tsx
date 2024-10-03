@@ -68,6 +68,25 @@ export default async function EditCustomerForm({ customerId }: { customerId: str
               </div>
             </div>
 
+            <div className="sm:col-span-3">
+              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                Disabled
+              </label>
+              <div className="mt-2">
+                <label htmlFor="isDisabled" className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    // onChange={() => console.log('TODO: Finish disabled cunctionality')}
+                    name="isDisabled"
+                    id="isDisabled"
+                    type="checkbox"
+                    checked={customer.isdisabled}
+                    className="sr-only peer"
+                  />
+                  <div className="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-0 peer-focus:ring-transparent rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500 hover:peer-checked:bg-blue-700"></div>
+                </label>
+              </div>
+            </div>
+
             <div className="col-span-full">
               <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
                 Photo
