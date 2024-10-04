@@ -48,10 +48,18 @@ export async function createInvoice(formData: FormData) {
   const amountInCents = rawFormData.amount * 100;
   const date = new Date().toISOString().split('T')[0];
 
-  await sql`
+  try {
+    await sql`
     INSERT INTO invoices (customer_id, amount, status, date) 
     VALUES (${rawFormData.customerId}, ${amountInCents}, ${rawFormData.status}, ${date})
-  `;
+    `;
+  } catch (err) {
+    console.log('Some error happened in the database.');
+
+    return {
+      message: 'Failed to create invoice. Error',
+    };
+  }
 
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
@@ -67,50 +75,66 @@ export async function updateInvoice(id: string, formData: FormData) {
   });
 
   const amountInCents = amount * 100;
-  await sql`
+  try {
+    await sql`
     UPDATE invoices
     SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
     WHERE id = ${id}
-  `;
+    `;
+  } catch (error) {
+    return { message: 'Database Error: Failed to update invoice.' };
+  }
 
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }
 
 export async function deleteInvoice(id: string) {
-  await sql`DELETE FROM invoices WHERE id = ${id}`;
-  revalidatePath('/dashboard/invoices');
+  try {
+    await sql`DELETE FROM invoices WHERE id = ${id}`;
+    revalidatePath('/dashboard/invoices');
+  } catch (err) {
+    console.log('Error: ', err);
+
+    return {
+      message: 'Database Error: Failed to delete invoice.',
+    };
+  }
 }
 
 const CreateCustomerSchema = CustomerSchema.omit({ id: true, isDeleted: true });
 
 export async function createCustomer(formData: FormData) {
-  const { firstName, lastName, email } = CreateCustomerSchema.partial({
-    imageUrl: true,
-  }).parse({
-    firstName: formData.get('firstName'),
-    lastName: formData.get('lastName'),
-    email: formData.get('email'),
-  });
+  try {
+    const { firstName, lastName, email } = CreateCustomerSchema.partial({
+      imageUrl: true,
+    }).parse({
+      firstName: formData.get('firstName'),
+      lastName: formData.get('lastName'),
+      email: formData.get('email'),
+    });
 
-  const file = formData.get('profileImage') as File;
-  let fileName = '';
+    const file = formData.get('profileImage') as File;
+    let fileName = '';
 
-  if (file.size > 1) {
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = new Uint8Array(arrayBuffer);
+    if (file.size > 1) {
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = new Uint8Array(arrayBuffer);
 
-    await fs.writeFile(`./public/customers/${file.name}`, buffer);
-    fileName = `/customers/${file.name}`;
-  }
+      await fs.writeFile(`./public/customers/${file.name}`, buffer);
+      fileName = `/customers/${file.name}`;
+    }
 
-  await sql`
+    await sql`
     INSERT INTO customers (name, email, image_url)
     VALUES (${firstName + ' ' + lastName}, ${email}, ${fileName})
   `;
 
-  revalidatePath('/dashboard/customers');
-  redirect('/dashboard/customers');
+    revalidatePath('/dashboard/customers');
+    redirect('/dashboard/customers');
+  } catch (err) {
+    console.log('Failed to create a customer. Error:', err);
+  }
 }
 
 export async function deleteCustomer(customerId: string) {
