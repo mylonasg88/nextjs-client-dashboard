@@ -12,11 +12,8 @@ import { formatCurrency } from './utils';
 
 export async function fetchRevenue() {
   try {
-    // Artificially delay a response for demo purposes.
-    // Don't do this in production :)
-
     console.log('Fetching revenue data...');
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const data = await sql<Revenue>`SELECT * FROM revenue`;
 
@@ -30,7 +27,7 @@ export async function fetchRevenue() {
 export async function fetchLatestInvoices() {
   try {
     console.log('Fetching latest invoices...');
-    await new Promise((resolve) => setTimeout(resolve, 2500));
+    // await new Promise((resolve) => setTimeout(resolve, 2500));
 
     const data = await sql<LatestInvoiceRaw>`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
@@ -61,7 +58,7 @@ type CardData = {
 export async function fetchCardData(): Promise<CardData> {
   try {
     console.log('Fetching card data...');
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
     // You can probably combine these into a single SQL query
     // However, we are intentionally splitting them to demonstrate
     // how to initialize multiple queries in parallel with JS.
@@ -127,10 +124,10 @@ export async function fetchFilteredInvoices(query: string, currentPage: number) 
   }
 }
 
-export async function fetchInvoicesPages(query: string) {
+export async function fetchInvoicesPagination(query: string) {
   try {
     console.log('Fetching invoices pages...');
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const count = await sql`SELECT COUNT(*)
     FROM invoices
@@ -220,7 +217,6 @@ export async function fetchFilteredCustomers(query: string, currentPage: number)
 
   try {
     console.log('Fetching Customers...');
-    // await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const data = await sql<CustomersTableType>`
 		SELECT
@@ -264,15 +260,12 @@ export async function fetchCustomer(id: string) {
         is_disabled as isdisabled 
         FROM customers WHERE customers.id = ${id}`;
 
-    if (data.rows.length === 0) {
-      throw new Error('Customer not found');
-    }
 
     const customer = data.rows[0];
 
     return customer;
   } catch (err) {
-    console.log('Database Errors:', err);
+    console.log(err);
     throw new Error('Failed to fetch customer.');
   }
 }
