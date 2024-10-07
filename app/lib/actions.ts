@@ -1,15 +1,30 @@
 'use server';
+
 import fs from 'node:fs/promises';
-import { sql } from '@vercel/postgres';
+import { QueryResult, QueryResultRow, sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+export type State = {
+  message?: null | string;
+  errors?: {
+    customerId?: string[];
+    amount?: string[];
+    status?: string[];
+  };
+  success?: boolean;
+};
+
 const InvoiceSchema = z.object({
   id: z.string(),
-  customerId: z.string(),
-  amount: z.coerce.number(),
-  status: z.enum(['pending', 'paid']),
+  customerId: z.string({
+    invalid_type_error: 'Please select a customer.',
+  }),
+  amount: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0' }),
+  status: z.enum(['pending', 'paid'], {
+    invalid_type_error: 'Please select an invoice status.',
+  }),
   date: z.string(),
 });
 
@@ -39,25 +54,37 @@ const CustomerSchema = z.object({
 
 const CreateInvoiceSchema = InvoiceSchema.omit({ id: true, date: true });
 
-export async function createInvoice(formData: FormData) {
-  const rawFormData = CreateInvoiceSchema.parse({
+export async function createInvoice(_: { message: string; success: boolean }, formData: FormData) {
+  const validatedFields = CreateInvoiceSchema.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
     status: formData.get('status'),
   });
-  const amountInCents = rawFormData.amount * 100;
+
+  if (!validatedFields.success) {
+    return {
+      // errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Invoice',
+      success: false,
+    };
+  }
+
+  const amountInCents = validatedFields.data.amount * 100;
   const date = new Date().toISOString().split('T')[0];
 
   try {
     await sql`
-    INSERT INTO invoices (customer_id, amount, status, date) 
-    VALUES (${rawFormData.customerId}, ${amountInCents}, ${rawFormData.status}, ${date})
-    `;
+      INSERT INTO invoices (customer_id, amount, status, date) 
+      VALUES (${validatedFields.data.customerId}, ${amountInCents}, ${validatedFields.data.status}, ${date})
+      `;
+
+    return { success: true, message: 'Success' }; // Here I should redirect user to Invoices page.
   } catch (err) {
     console.log('Some error happened in the database.');
 
     return {
       message: 'Failed to create invoice. Error',
+      success: false,
     };
   }
 
@@ -196,3 +223,91 @@ export async function updateCustomer(customerId: string, formData: FormData) {
   revalidatePath('/dashboard/customers');
   redirect('/dashboard/customers');
 }
+
+// ===============================
+
+const invoiceFormSchema = z.object({
+  userId: z.string().uuid({ message: 'Invalid user ID format' }),
+  // amount: z.string(), //.min(1, { message: 'Amount must be greater than 0' }),
+  // status: z.string(), //enum(['pending', 'paid'], { message: "Status must be either 'pending' or 'paid'" }),
+});
+
+// export type InvoiceFormSchema = z.infer<typeof invoiceFormSchema>;
+
+export async function createInvoice2(formData: FormData) {
+  console.log('formData : ', formData);
+  const userId = formData.get('userId')?.toString() || '';
+  const amount = formData.get('amount')?.toString();
+  const status = formData.get('status')?.toString() || '';
+
+  const parsedAmount = typeof amount === 'string' ? parseFloat(amount) : 0;
+
+  // Prepare data for validation and creation
+  const invoiceData = {
+    userId,
+    amount: parsedAmount,
+    status,
+  };
+
+  try {
+    // Validate input data using Zod
+    const validationResult = invoiceFormSchema.safeParse(invoiceData);
+
+    if (!validationResult.success) {
+      throw new Error('Validation error: ' + validationResult.error.errors.map((err) => err.message).join(', '));
+    }
+
+    // const { userId, amount, status } = validationResult.data;
+    const { userId } = validationResult.data;
+    // Insert invoice data into the database using @vercel/postgres
+    await sql`
+      INSERT INTO invoices (customer_id, amount, status)
+      VALUES (${userId}, ${amount}, ${status})
+    `;
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error creating invoice:', error.message);
+
+    // throw new Error("Error creating invoice");
+    return { message: 'Error' };
+  }
+}
+
+interface InvoiceType2 {
+  customerId: string;
+  amount: number;
+  status: 'paid' | 'pending';
+  date: string;
+}
+
+const invoiceFormSchema2 = z.object({
+  customerId: z.string().uuid('Specified ID was incorrect.'),
+  amount: z.coerce.number().gt(0, { message: 'Please specify an amount greater than 0.' }),
+  status: z.enum(['paid', 'pending'], { message: 'Incorrect invoice status.' }),
+  // date: z.date().optional(),
+});
+
+export const createInvoice3 = async (_: State, formData: FormData) => {
+  console.log('formData: ', formData);
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  try {
+    const result = invoiceFormSchema2.safeParse({
+      customerId: formData.get('customerId'),
+      status: formData.get('status'),
+      amount: formData.get('amount'),
+    });
+
+    if (!result.success) {
+      return { message: 'Could not validate form', errors: result.error.flatten().fieldErrors };
+    }
+
+    return { success: true, message: 'Success' }; // Here I should redirect user to Invoices page.
+  } catch (error) {
+    // console.log('error', error.message);
+    // Log to Sentry
+
+    return { message: 'Could not save to database.', success: false };
+  }
+};

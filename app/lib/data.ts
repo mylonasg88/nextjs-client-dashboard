@@ -260,7 +260,6 @@ export async function fetchCustomer(id: string) {
         is_disabled as isdisabled 
         FROM customers WHERE customers.id = ${id}`;
 
-
     const customer = data.rows[0];
 
     return customer;
