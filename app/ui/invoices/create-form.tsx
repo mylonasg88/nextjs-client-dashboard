@@ -11,21 +11,9 @@ export default function Form({ customers, ...props }: { customers: CustomerField
   const initialState = { message: '', errors: {}, success: false };
   const [state, formAction, isPending] = useActionState(createInvoice, initialState);
 
-  // const handleSubmit = async (event) => {
-  //   'use server';
-  //   // event?.preventDefault();
-  //   const formData = new FormData(event.target);
-  //   console.log(formData);
-  //   const response = await createInvoice(formData);
-
-  //   console.log(response);
-  // };
-
-  // console.log(state);
-
   return (
     <form action={formAction}>
-      <div className="rounded-md bg-gray-50 p-4 md:p-6">
+      <div className="rounded-md bg-gray-50 p-4 md:p-6 w-1/3">
         {isPending && <h3>Loading...</h3>}
         {/* Customer Name */}
         <div className="mb-4">
@@ -129,15 +117,15 @@ export default function Form({ customers, ...props }: { customers: CustomerField
             </div>
           </div>
         </fieldset>
-      </div>
-      <div className="mt-6 flex justify-end gap-4">
-        <Link
-          href="/dashboard/invoices"
-          className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
-        >
-          Cancel
-        </Link>
-        <Button type="submit">Create Invoice</Button>
+        <div className="mt-6 flex justify-end gap-4">
+          <Link
+            href="/dashboard/invoices"
+            className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+          >
+            Cancel
+          </Link>
+          <Button type="submit">Create Invoice</Button>
+        </div>
       </div>
     </form>
   );

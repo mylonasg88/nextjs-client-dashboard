@@ -54,7 +54,7 @@ const CustomerSchema = z.object({
 
 const CreateInvoiceSchema = InvoiceSchema.omit({ id: true, date: true });
 
-export async function createInvoice(_: { message: string; success: boolean }, formData: FormData) {
+export async function createInvoice(_: State, formData: FormData) {
   const validatedFields = CreateInvoiceSchema.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -300,14 +300,19 @@ export const createInvoice3 = async (_: State, formData: FormData) => {
     });
 
     if (!result.success) {
-      return { message: 'Could not validate form', errors: result.error.flatten().fieldErrors };
+      return {
+        d: 'hello',
+        message: 'Could not validate form',
+        errors: result.error.flatten().fieldErrors,
+        success: false,
+      };
     }
 
-    return { success: true, message: 'Success' }; // Here I should redirect user to Invoices page.
+    return { success: false, message: 'Success' }; // Here I should redirect user to Invoices page.
   } catch (error) {
     // console.log('error', error.message);
     // Log to Sentry
 
-    return { message: 'Could not save to database.', success: false };
+    return { message: 'Could not save to database.', success: false, details: 'hello world' };
   }
 };
