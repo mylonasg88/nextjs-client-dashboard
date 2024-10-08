@@ -1,7 +1,7 @@
 'use server';
 
 import fs from 'node:fs/promises';
-import { QueryResult, QueryResultRow, sql } from '@vercel/postgres';
+import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
@@ -63,7 +63,7 @@ export async function createInvoice(_: State, formData: FormData) {
 
   if (!validatedFields.success) {
     return {
-      // errors: validatedFields.error.flatten().fieldErrors,
+      errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Create Invoice',
       success: false,
     };
@@ -78,7 +78,7 @@ export async function createInvoice(_: State, formData: FormData) {
       VALUES (${validatedFields.data.customerId}, ${amountInCents}, ${validatedFields.data.status}, ${date})
       `;
 
-    return { success: true, message: 'Success' }; // Here I should redirect user to Invoices page.
+    // return { success: true, message: 'Success' }; // Here I should redirect user to Invoices page.
   } catch (err) {
     console.log('Some error happened in the database.');
 
@@ -266,7 +266,7 @@ export async function createInvoice2(formData: FormData) {
     `;
 
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating invoice:', error.message);
 
     // throw new Error("Error creating invoice");
