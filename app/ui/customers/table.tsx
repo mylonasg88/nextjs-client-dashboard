@@ -27,7 +27,7 @@ export default async function CustomersTable({ query, currentPage }: { query: st
                               src={
                                 customer.image_url.length > 0 ? customer.image_url : '/customers/default/profile.png'
                               }
-                              className={`rounded-full ${customer.isdisabled && 'border-red-500 border-2' }`}
+                              className={`rounded-full ${customer.isdisabled && 'border-red-500 border-2'}`}
                               alt={`${customer.name}'s profile picture`}
                               width={28}
                               height={28}
@@ -85,7 +85,7 @@ export default async function CustomersTable({ query, currentPage }: { query: st
                         <div className="flex items-center gap-3">
                           <Image
                             src={customer.image_url.length > 0 ? customer.image_url : '/customers/default/profile.png'}
-                            className={`rounded-full ${customer.isdisabled && 'border-red-500 border-2' }`}
+                            className={`rounded-full ${customer.isdisabled && 'border-red-500 border-2'}`}
                             alt={`${customer.name}'s profile picture`}
                             width={28}
                             height={28}

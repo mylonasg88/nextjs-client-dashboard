@@ -42,9 +42,7 @@ export default function ConfirmDialog({
                     Disable customer
                   </DialogTitle>
                   <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      Are you sure you want to disable a customer?
-                    </p>
+                    <p className="text-sm text-gray-500">Are you sure you want to disable a customer?</p>
                   </div>
                 </div>
               </div>
